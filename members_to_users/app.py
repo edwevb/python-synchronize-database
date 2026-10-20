@@ -30,6 +30,14 @@ conn = psycopg2.connect(**TARGET_DB)
 
 cur = conn.cursor()
 
+cur.execute("""
+    SELECT setval(
+        pg_get_serial_sequence('pricelist.trading.users', 'id'),
+        COALESCE((SELECT MAX(id) FROM pricelist.trading.users), 0) + 1,
+        false
+    )
+""")
+
 update_sql = """
 UPDATE pricelist.trading.users
 SET
